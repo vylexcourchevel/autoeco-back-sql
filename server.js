@@ -1,4 +1,8 @@
 import express from 'express';
+import cors from 'cors';
+
+
+
 
 
 //require('dotenv').config();
@@ -17,7 +21,18 @@ import userRoutes from './routes/userRoutes.js';
 // const carLocationRoutes = require('./routes/carLocationRoutes');
 // const carImageRoutes = require('./routes/carImageRoutes');
 
+
+// démarrage du serveur a mettre en premier apes les import !!!!!!!!    
 const app = express();
+//si use use.cors marche pas rempalce par cette fonction
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  return next();
+});
 
 //PORT
 const PORT = process.env.PORT || 8000;
@@ -25,8 +40,6 @@ const PORT = process.env.PORT || 8000;
 
 // MIDDLEWARE
 app.use(express.json()); // Middleware pour traiter les requêtes JSON
-//app.use(cookieParser()); // Middleware pour traiter les cookies
-// app.use(cors()); // Middleware pour gérer les requêtes cross-origin
 
 
 // ROUTES

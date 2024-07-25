@@ -5,11 +5,13 @@
 //import { Car, CarType, CarLocation } from "../models/index.js";
 import { Car } from "../models/index.js";
 
-
+  
 
 //exports.getAllCars = async (req, res) => {
 
   const getAllCars = async (req, res) => {
+
+    console.log(req.body);
 
   try {
     const cars = await Car.findAll({
