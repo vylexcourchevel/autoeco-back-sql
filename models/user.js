@@ -1,5 +1,4 @@
-// const { DataTypes } = require('sequelize');
-// const sequelize = require('../config/database');
+
 
 export default (connection, DataTypes) => {
 
@@ -26,6 +25,7 @@ export default (connection, DataTypes) => {
             },
             password: {
               type: DataTypes.STRING(250),
+            
           },
             address: {
               type: DataTypes.STRING(250),
@@ -43,4 +43,36 @@ export default (connection, DataTypes) => {
      );
 };
 
-// module.exports = User;
+
+// // models/user.js
+// import { DataTypes } from 'sequelize';
+//  import sequelize from '../config/database.js';
+
+// const User = sequelize.define('User', {
+//     firstName: {
+//         type: DataTypes.STRING(150),
+//         allowNull: false
+//     },
+//     lastName: {
+//         type: DataTypes.STRING(150),
+//         allowNull: false
+//     },
+//     email: {
+//         type: DataTypes.STRING(250),
+//         unique: true
+//     },
+//     password: {
+//         type: DataTypes.STRING(250),
+//     },
+//     address: {
+//         type: DataTypes.STRING(250),
+//         allowNull: false
+//     },
+//     phoneNumber: {
+//         type: DataTypes.STRING
+//     }
+// }, {
+//     timestamps: true
+// });
+
+// export default User;

@@ -1,4 +1,6 @@
 import  express  from 'express';
+//import multer from '../middleware/multer-config.js';
+
 
 
 
@@ -19,6 +21,8 @@ router.get('/get/:id', getCarById);
 router.post('/add', createCar);
 router.put('/update/:id', updateCar);
 router.delete('/delete/:id', deleteCar);
+
+//router.post('/', multer, stuffCtrl.createThing);
 
 
 export default router;
