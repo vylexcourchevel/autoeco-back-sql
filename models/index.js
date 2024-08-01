@@ -68,7 +68,7 @@ Car.hasMany(CarImage);
 CarImage.belongsTo(Car);
 
 
-
+await connection.sync();
 
 // Démarrage du serveur
 // app.listen(PORT, () => {

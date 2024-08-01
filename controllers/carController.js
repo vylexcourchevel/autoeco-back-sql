@@ -31,24 +31,28 @@ const getCarById = async (req, res) => {
 
 // Créer une nouvelle voiture
 const createCar = async (req, res) => {
+  console.log('test');
   try {
     // Récupérer les données de la voiture à partir du corps de la requête
     const carData = req.body;
+    console.log(req.file);
     // Si un fichier est téléchargé, ajouter le chemin de l'image à carData
-    if (req.file) {
-      carData.image = `/public/images/${req.file.filename}`; // Ajouter le chemin de l'image téléchargée
-    }
+    // if (req.file) {
+      // carData.image = `/public/images/${req.file.filename}`; // Ajouter le chemin de l'image téléchargée
+    // }
+    console.log(carData)
     // Créer une nouvelle voiture dans la base de données avec les données fournies
     const car = await Car.create(carData);
+    console.log(car);
 
-    // Créer une nouvelle entrée dans CarImage avec l'URL de l'image et l'ID de la voiture
-    const carImage = await CarImage.create({
-      imageURL: carData.image,
-      carId: car.id
+    const carImage = await car.createCarImage({
+      imageURL: `/public/images/${req.file.filename}`,
     });
+    // Créer une nouvelle entrée dans CarImage avec l'URL de l'image et l'ID de la voiture
+   
+    console.log('post saved carImage');
 
     // Afficher carImage dans la console pour le débogage
-    console.log(carImage);
     // Répondre avec la voiture créée en format JSON
     res.json(car);
   } catch (error) {

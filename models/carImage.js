@@ -12,10 +12,10 @@ export default (connection, DataTypes) => {
       // },
       imageURL: {
         type: DataTypes.STRING(255)
-      },
-      carId: {
-        type: DataTypes.INTEGER,
       }
+      // carId: {
+      //   type: DataTypes.INTEGER,
+      // }
     },
     {
       timestamps: true

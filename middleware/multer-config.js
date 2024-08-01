@@ -5,7 +5,8 @@ import multer from 'multer';
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
-  'image/webp': 'webp'
+  'image/webp': 'webp',
+  'image/png': 'png'
 };
 
 // Configuration du stockage pour multer
