@@ -1,8 +1,5 @@
-import  express  from 'express';
-//import multer from '../middleware/multer-config.js';
-
-
-
+import express from 'express';
+import multer from '../middleware/multer-config.js';
 
 import {
     getAllCars,
@@ -14,15 +11,10 @@ import {
 
 const router = express.Router();
 
-
-
 router.get('/all', getAllCars);
 router.get('/get/:id', getCarById);
-router.post('/add', createCar);
-router.put('/update/:id', updateCar);
+router.post('/add', multer.single('image'),  createCar);
+router.put('/update/:id',  updateCar);
 router.delete('/delete/:id', deleteCar);
-
-//router.post('/', multer, stuffCtrl.createThing);
-
 
 export default router;
