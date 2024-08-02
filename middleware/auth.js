@@ -5,6 +5,7 @@ import { createError } from '../error.js'
 export const verifyToken = (req, res, next) => {
   // Récupère le jeton (token) JWT à partir des cookies de la requête
   const token = req.cookies.access_token;
+  console.log(req.cookies.access_token);
 
   // Si le jeton (token) n'est pas présent, 
   // renvoie une erreur 401 (accès refusé)
@@ -26,3 +27,4 @@ export const verifyToken = (req, res, next) => {
     next();
   })
 }
+console.log(verifyToken)
