@@ -91,6 +91,7 @@ const updateCar = async (req, res) => {
 
 // Supprimer une voiture
 const deleteCar = async (req, res) => {
+  console.log('test');
   try {
     // Supprimer une voiture de la base de données par son ID
     const carDeleted = await Car.destroy({ where: { id: req.params.id } });
