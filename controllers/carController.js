@@ -5,7 +5,7 @@ import { Car, CarImage } from "../models/index.js";
 const getAllCars = async (req, res) => {
   try {
     // Rechercher toutes les voitures dans la base de données
-    const cars = await Car.findAll();
+    const cars = await Car.findAll({include: CarImage});
     // Répondre avec les voitures trouvées en format JSON avec un code de statut 200 (OK)
     res.status(200).json(cars);
   } catch (error) {
@@ -46,7 +46,7 @@ const createCar = async (req, res) => {
     console.log(car);
 
     const carImage = await car.createCarImage({
-      imageURL: `/public/images/${req.file.filename}`,
+      imageURL: `/images/${req.file.filename}`,
     });
     // Créer une nouvelle entrée dans CarImage avec l'URL de l'image et l'ID de la voiture
    

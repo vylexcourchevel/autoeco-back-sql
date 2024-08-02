@@ -21,9 +21,7 @@ const storage = multer.diskStorage({
     // Remplacement des espaces par des underscores dans le nom du fichier original
     const name = file.originalname.split(' ').join('_');
     // Récupération de l'extension de fichier appropriée à partir du type MIME
-    const extension = MIME_TYPES[file.mimetype];
-    // Création du nom final du fichier avec un timestamp pour garantir l'unicité
-    callback(null, name + Date.now() + '.' + extension);
+    callback(null, name);
   }
 });
 

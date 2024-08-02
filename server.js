@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 // Définition du port
 dotenv.config();
 const PORT = process.env.PORT || 5000;
-
+app.use(express.static('public'));
 
 // Middleware pour traiter les requêtes JSON
 app.use(express.json());

@@ -17,8 +17,18 @@ exports.getAllCars = async (req, res) => {
 
   try {
     const cars = await Car.findAll({
-      include: [CarType, CarLocation]
-    });
+      
+        include: [
+          CarType,
+          CarLocation,
+          {
+            model: CarImage,
+            as: 'images', // Utilisation de l'alias défini dans le modèle Car
+          },
+        ],
+      });
+      // include: [CarType, CarLocation]
+    // });
     res.status(200).json(cars);
   } catch (error) {
     res.status(500).json({ error: error.message });
