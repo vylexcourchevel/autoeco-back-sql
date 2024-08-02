@@ -33,9 +33,13 @@ export default (connection, DataTypes) => {
             },
             phoneNumber: {
               type: DataTypes.STRING
+            },
+            isAdmin: {
+              type: DataTypes.BOOLEAN,
+              defaultValue: false
             }
           },
-
+            
           {
             timestamps: true
           }
