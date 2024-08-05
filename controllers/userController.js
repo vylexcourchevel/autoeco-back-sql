@@ -40,12 +40,12 @@ const login = async (req, res) => {
 
         // Afficher le token créé pour le débogage
         console.log("Token created:", token);
-
+        console.log(user);
         // Envoyer le token au client dans un cookie HTTP Only, avec une réponse de succès (code 200)
         res.cookie("access_token", token, {
              httpOnly: true,
              secure: process.env.NODE_ENV === 'production', // En production, le cookie sera envoyé uniquement sur HTTPS }).status(200).json(user);
-             sameSite: 'None' // Nécessaire pour les requêtes cross-origin (à ajuster selon les besoins)
+             sameSite: 'Strict' // Nécessaire pour les requêtes cross-origin (à ajuster selon les besoins)
             }).status(200).json(user);
     } catch (e) {
         // En cas d'erreur, afficher l'erreur et renvoyer une réponse avec un code d'erreur 500
