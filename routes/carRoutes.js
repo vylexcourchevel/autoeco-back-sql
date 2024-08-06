@@ -12,9 +12,10 @@ import {
 const router = express.Router();
 
 router.get('/all', getAllCars);
-router.get('/get/:id', getCarById);
+router.get('/:id', getCarById);
 router.post('/add', multer.single('image'),  createCar);
 router.put('/update/:id',  updateCar);
 router.delete('/delete/:id', deleteCar);
+
 
 export default router;

@@ -18,7 +18,7 @@ const getAllCars = async (req, res) => {
 const getCarById = async (req, res) => {
   try {
     // Rechercher une voiture par sa clé primaire (ID) fournie dans les paramètres de la requête
-    const car = await Car.findByPk(req.params.id);
+    const car = await Car.findByPk(req.params.id, {include: CarImage});
     // Si la voiture n'est pas trouvée, répondre avec un message et un code de statut 404 (Non trouvé)
     if (!car) return res.status(404).json("Car not found!");
     // Répondre avec la voiture trouvée en format JSON avec un code de statut 200 (OK)
