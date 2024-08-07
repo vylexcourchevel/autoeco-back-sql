@@ -9,8 +9,10 @@ const createReservation = async (req, res) => {
   const data = {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
+    totalPrice: req.body.totalPrice,
     UserId: userId,
     CarId: req.body.CarId,
+
 
   }
   try {
