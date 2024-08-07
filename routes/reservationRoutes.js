@@ -1,4 +1,5 @@
 import  express from 'express';
+import { verifyToken } from '../middleware/auth.js';
 
 import {
     getAllReservations,
@@ -9,6 +10,7 @@ import {
 
 } from '../controllers/reservationController.js';
 
+
 const router = express.Router();
 
 
@@ -16,7 +18,7 @@ const router = express.Router();
 
 router.get('/all', getAllReservations);
 router.get('/get/:id',getReservationById);
-router.post('/add', createReservation);
+router.post('/add', verifyToken, createReservation);
 router.put('/update/:id', updateReservation);
 router.delete('/delete/:id', deleteReservation);
 

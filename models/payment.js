@@ -35,6 +35,6 @@ export default (connection, DataTypes) => {
 }
 
 
-// Payment.belongsTo(Reservation, { foreignKey: 'reservationID' });
+ //Payment.belongsTo(Reservation, { foreignKey: 'reservationID' });
 
 // module.exports = Payment;
