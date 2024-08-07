@@ -141,6 +141,16 @@ const deleteUser = async (req, res) => {
 
 // Fonction pour s'inscrire
 
+// Fonction pour recuperer l'utilisateur courant
+const getCurrentUser = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id);
+        res.status(200).json(user);
+    } catch (error) {
+        console.log("Error in getCurrentUser:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Export des fonctions
 export {
@@ -151,6 +161,7 @@ export {
     getUserById,
     updateUser,
     deleteUser,
+    getCurrentUser
 };
 
 

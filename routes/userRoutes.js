@@ -10,7 +10,8 @@ import {
    updateUser,
    deleteUser,
    login,
-   register
+   register,
+   getCurrentUser
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -18,6 +19,7 @@ const router = express.Router();
 router.post('/add', verifyToken, add);
 router.get('/all', getAll);
 router.get('/get/:id',  getUserById);
+router.get('/getCurrent', verifyToken, getCurrentUser);
 router.put('/update/:id', verifyToken, updateUser);
 router.delete('/delete/:id', verifyToken, deleteUser);
 
