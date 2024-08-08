@@ -10,6 +10,7 @@ import {
    updateUser,
    deleteUser,
    login,
+   logout,
    register,
    getCurrentUser
 } from '../controllers/userController.js';
@@ -26,6 +27,10 @@ router.delete('/delete/:id', verifyToken, deleteUser);
 // Routes pour l'inscription et la connexion
 router.post('/register', register);
 router.post('/login',  login);
+
+//Routes pour la suppression des cookies
+
+router.post('/logout', logout);
 
 
 

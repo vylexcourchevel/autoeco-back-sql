@@ -152,9 +152,29 @@ const getCurrentUser = async (req, res) => {
     }
 };
 
+// Fonction pour gérer la déconnexion des utilisateurs
+const logout = async (req, res) => {
+    try {
+        // Effacer le cookie contenant le token
+        res.clearCookie("access_token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict'
+        });
+
+        // Réponse indiquant que l'utilisateur a été déconnecté avec succès
+        return res.status(200).json({ message: "User logged out successfully" });
+    } catch (error) {
+        console.log("Error in logout:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
 // Export des fonctions
 export {
     login,
+    logout, 
     register,
     add,
     getAll,
@@ -165,41 +185,3 @@ export {
 };
 
 
-
-// // userController.js
-// import bcrypt from 'bcrypt';
-// import jwt from 'jsonwebtoken';
-// import {User} from '../models/index.js';
-// import dotenv from 'dotenv';
-
-// dotenv.config();
-
-// // Fonction pour se connecter
-// const login = async (req, res) => {
-//     try {
-//         console.log("Logging in user with email:", req.body.email);
-//         const user = await User.findOne({ where: { email: req.body.email } });
-//         if (!user) {
-//             console.log("User not found");
-//             return res.status(404).json("User not found!");
-//         }
-
-//         const comparePassword = await bcrypt.compare(req.body.password, user.password);
-//         if (!comparePassword) {
-//             console.log("Wrong Credentials");
-//             return res.status(400).json("Wrong Credentials!");
-//         }
-
-//         const token = jwt.sign(
-//             { id: user.id },
-//             process.env.TOKEN,
-//             { expiresIn: "24h" }
-//         );
-
-//         console.log("Token created:", token);
-//         res.cookie("access_token", token, { httpOnly: true }).status(200).json(user);
-//     } catch (e) {
-//         console.log("Error in login:", e);
-//         res.status(500).json({ error: e.message });
-//     }
-// };
