@@ -1,4 +1,4 @@
-
+// src/models/index.js
 
 import express from 'express';
 //import multer from 'multer';
@@ -70,7 +70,8 @@ CarImage.belongsTo(Car);
 Car.hasMany(Reservation);
 Reservation.belongsTo(Car);
 
-await connection.sync({alter: true});
+await connection.sync();
+// await connection.sync({alter: true});
 
 // Démarrage du serveur
 // app.listen(PORT, () => {

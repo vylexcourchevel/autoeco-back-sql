@@ -5,17 +5,17 @@ export default (sequelize, DataTypes) => {
     'Car',
     {
       brand: {
-        type: DataTypes.STRING(250),
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
       model: {
-        type: DataTypes.STRING(250),
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
       registrationPlate: {
-        type: DataTypes.STRING(250),
+        type: DataTypes.STRING(50),
         allowNull: false,
-        unique: true,
+       // unique: true,
       },
       years: {
         type: DataTypes.INTEGER,

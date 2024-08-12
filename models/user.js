@@ -12,23 +12,23 @@ export default (connection, DataTypes) => {
             //   autoIncrement: true
             // },
             firstName: {
-              type: DataTypes.STRING(150),
+              type: DataTypes.STRING(100),
               allowNull: false
             },
             lastName: {
-              type: DataTypes.STRING(150),
+              type: DataTypes.STRING(100),
               allowNull: false
             },
             email: {
-              type: DataTypes.STRING(250),
+              type: DataTypes.STRING(150),
               unique: true
             },
             password: {
-              type: DataTypes.STRING(250),
+              type: DataTypes.STRING(150),
             
           },
             address: {
-              type: DataTypes.STRING(250),
+              type: DataTypes.STRING(150),
               allowNull: false
             },
             phoneNumber: {
