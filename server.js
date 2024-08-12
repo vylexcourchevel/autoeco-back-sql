@@ -3,6 +3,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import cors from 'cors';
 //import upload from './middleware/multer-config.js';
 
 // Importation des modules nécessaires
@@ -11,11 +12,11 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import carRoutes from './routes/carRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-// import carImageRoutes from './routes/carImageRoutes.js';
+
 
 const app = express();
 
-// Middleware pour gérer les problèmes de CORS
+//Middleware pour gérer les problèmes de CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -23,6 +24,9 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   return next();
 });
+
+
+
 
 // Définition du port
 dotenv.config();

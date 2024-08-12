@@ -71,7 +71,7 @@ Car.hasMany(Reservation);
 Reservation.belongsTo(Car);
 
 await connection.sync();
-// await connection.sync({alter: true});
+ //await connection.sync({alter: true});
 
 // Démarrage du serveur
 // app.listen(PORT, () => {

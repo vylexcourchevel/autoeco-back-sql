@@ -12,17 +12,22 @@ import {
    login,
    logout,
    register,
-   getCurrentUser
+   getCurrentUser,
+   updateAdminStatus
 } from '../controllers/userController.js';
 
 const router = express.Router();
 
 router.post('/add', verifyToken, add);
-router.get('/all', getAll);
+router.get('/all',verifyToken, getAll);
 router.get('/get/:id',  getUserById);
 router.get('/getCurrent', verifyToken, getCurrentUser);
 router.put('/update/:id', verifyToken, updateUser);
 router.delete('/delete/:id', verifyToken, deleteUser);
+
+//route pour modifier l'id du user pour voir s'il est admin ou pas
+
+router.post('/admin/:id', verifyToken, updateAdminStatus);
 
 // Routes pour l'inscription et la connexion
 router.post('/register', register);
