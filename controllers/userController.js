@@ -1,3 +1,5 @@
+
+
 //controller/userController.js
 
 // Import des modules nécessaires
@@ -166,16 +168,29 @@ const updateAdminStatus = async (req, res) => {
 
 
 // Fonction pour supprimer un utilisateur
-const deleteUser = async (req, res) => {
+async function deleteUser(req, res) {
     try {
-        const userDeleted = await User.destroy({ where: { userID: req.params.id } });
-        if (!userDeleted) return res.status(404).json("User not found!");
-        res.status(200).json({ message: "User deleted" });
+        const userId = req.params.id;
+        await User.destroy({
+            where: { id: userId }  // Remplacez userID par id
+        });
+        res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
     } catch (error) {
-        console.log("Error in deleteUser:", error);
-        res.status(500).json({ error: error.message });
+        console.error('Erreur dans deleteUser:', error);
+        res.status(500).json({ message: 'Erreur lors de la suppression de l\'utilisateur' });
     }
-};
+}
+
+// const deleteUser = async (req, res) => {
+//     try {
+//         const userDeleted = await User.destroy({ where: { userID: req.params.id } });
+//         if (!userDeleted) return res.status(404).json("User not found!");
+//         res.status(200).json({ message: "User deleted" });
+//     } catch (error) {
+//         console.log("Error in deleteUser:", error);
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Fonction pour s'inscrire
 
