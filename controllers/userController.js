@@ -1,6 +1,6 @@
 
 
-//controller/userController.js
+//controller/userController.js VERSION TEST !!!!!!!!!!!!!!!!!!!!
 
 // Import des modules nécessaires
 import bcrypt from 'bcrypt'; // Pour le hachage et la comparaison des mots de passe
@@ -82,14 +82,37 @@ const register = async (req, res, next) => {
 };
 
 
-// Fonction pour ajouter un utilisateur
+
+// Fonction pour ajouter un nouvel utilisateur
 const add = async (req, res) => {
     try {
-        const auteur = await User.create(req.body);
-        res.status(201).json(auteur);
+        const { firstName, lastName, email, password, address, phoneNumber, isAdmin } = req.body;
+
+        // Vérifier si le mot de passe est fourni
+        if (!password || password.length === 0) {
+            return res.status(400).json({ message: "Le mot de passe est requis" });
+        }
+
+        // Générer un sel et crypter le mot de passe
+        const salt = await bcrypt.genSalt(10); // Générer un sel
+        const hashedPassword = await bcrypt.hash(password, salt); // Crypter le mot de passe
+
+        // Créer un nouvel utilisateur avec le mot de passe crypté
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword, // Utiliser le mot de passe crypté
+            address,
+            phoneNumber,
+            isAdmin
+        });
+
+        // Sauvegarder l'utilisateur dans la base de données
+        const savedUser = await newUser.save();
+        res.status(201).json(savedUser);
     } catch (error) {
-        console.log("Error in add:", error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: "Erreur lors de l'ajout de l'utilisateur" });
     }
 };
 
@@ -118,21 +141,69 @@ const getUserById = async (req, res) => {
     }
 };
 
+
 // Fonction pour mettre à jour un utilisateur
+
 const updateUser = async (req, res) => {
+   
+    const { id } = req.params;
+    const { firstName, lastName, email, password, address, phoneNumber, isAdmin } = req.body;
+
     try {
-        const user = await User.findByPk(req.params.id);
-        if (!user) return res.status(404).json("User not found!");
-        await user.update(req.body);
-        res.status(200).json({
-            message: "User updated",
-            user
-        });
+        // Trouver l'utilisateur par ID
+        const user = await User.findByPk(id);
+        console.log(user)
+        if (!user) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        // Debug: Afficher les données reçues
+        console.log('Données reçues:', req.body);
+
+        // Si un mot de passe est fourni, le hacher
+        let hashedPassword = user.password; // Garder l'ancien mot de passe par défaut
+        if (password) {
+            console.log('Hachage du mot de passe...');
+            hashedPassword = await bcrypt.hash(password, 10); // Hachage du nouveau mot de passe
+        }
+
+        // Mettre à jour les champs de l'utilisateur
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.email = email || user.email;
+        user.password = hashedPassword;
+        user.address = address || user.address;
+        user.phoneNumber = phoneNumber || user.phoneNumber;
+        user.isAdmin = isAdmin !== undefined ? isAdmin : user.isAdmin;
+
+        // Debug: Afficher les données de l'utilisateur après mise à jour
+        console.log('Données de l\'utilisateur après mise à jour:', user);
+
+        // Sauvegarder les modifications
+        await user.save();
+
+        res.status(200).json(user);
     } catch (error) {
-        console.log("Error in updateUser:", error);
-        res.status(500).json({ error: error.message });
+        // Debug: Afficher l'erreur
+        console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+        res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur' });
     }
 };
+
+// const updateUser = async (req, res) => {
+//     try {
+//         const user = await User.findByPk(req.params.id);
+//         if (!user) return res.status(404).json("User not found!");
+//         await user.update(req.body);
+//         res.status(200).json({
+//             message: "User updated",
+//             user
+//         });
+//     } catch (error) {
+//         console.log("Error in updateUser:", error);
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Fonction pour mettre à jour le statut d'administrateur  d'un utilisateur
 const updateAdminStatus = async (req, res) => {
@@ -181,18 +252,7 @@ async function deleteUser(req, res) {
     }
 }
 
-// const deleteUser = async (req, res) => {
-//     try {
-//         const userDeleted = await User.destroy({ where: { userID: req.params.id } });
-//         if (!userDeleted) return res.status(404).json("User not found!");
-//         res.status(200).json({ message: "User deleted" });
-//     } catch (error) {
-//         console.log("Error in deleteUser:", error);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
 
-// Fonction pour s'inscrire
 
 // Fonction pour recuperer l'utilisateur courant
 const getCurrentUser = async (req, res) => {
@@ -241,7 +301,7 @@ export {
 
 
 
-
+// //controller/userController.js DERNIERE BONNNE VERSION !!!!!!!!!!!!!!!!!!!!!!!
 
 // // Import des modules nécessaires
 // import bcrypt from 'bcrypt'; // Pour le hachage et la comparaison des mots de passe
@@ -300,28 +360,29 @@ export {
 // };
 
 
-
-
 // const register = async (req, res, next) => {
 //     try {
-//       // Hashage du mot de passe avec bcrypt, "10" est le nombre de tours de salage
-//       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//         const hashedPassword = await bcrypt.hash(req.body.password, 10);
   
-//       // Création d'un nouvel utilisateur dans la base de données avec les informations reçues et le mot de passe haché
-//       await User.create({
-//         // '...req.body' est une syntaxe de décomposition (spread syntax).
-//         // Elle permet de créer une copie de toutes les propriétés de 'req.body' et de les ajouter à l'objet en cours de création.
-//         ...req.body,
-//         password: hashedPassword
-//       });
-  
-//       // Envoi d'une réponse avec le statut 201 (créé) et un message de confirmation
-//       res.status(201).json("User has been created!");
+//         const newUser = await User.create({
+//             ...req.body,
+//             password: hashedPassword
+//         });
+
+//         res.status(201).json({
+//             id: newUser.id,
+//             firstName: newUser.firstName,
+//             lastName: newUser.lastName,
+//             email: newUser.email,
+//             isAdmin: newUser.isAdmin ? 'Oui' : 'Non', // Affichage de 'Oui' ou 'Non'
+//             createdAt: newUser.createdAt
+//         });
 //     } catch (error) {
-//       // Si une erreur se produit, passez-la au prochain middleware pour la gestion des erreurs
-//       next(error);
+//         next(error);
 //     }
-//   };
+// };
+
+
 // // Fonction pour ajouter un utilisateur
 // const add = async (req, res) => {
 //     try {
@@ -337,12 +398,14 @@ export {
 // const getAll = async (req, res) => {
 //     try {
 //         const users = await User.findAll();
+
 //         res.status(200).json(users);
 //     } catch (error) {
 //         console.log("Error in getAll:", error);
 //         res.status(500).json({ error: error.message });
 //     }
 // };
+
 
 // // Fonction pour récupérer un utilisateur par son ID
 // const getUserById = async (req, res) => {
@@ -372,17 +435,63 @@ export {
 //     }
 // };
 
-// // Fonction pour supprimer un utilisateur
-// const deleteUser = async (req, res) => {
+// // Fonction pour mettre à jour le statut d'administrateur  d'un utilisateur
+// const updateAdminStatus = async (req, res) => {
 //     try {
-//         const userDeleted = await User.destroy({ where: { userID: req.params.id } });
-//         if (!userDeleted) return res.status(404).json("User not found!");
-//         res.status(200).json({ message: "User deleted" });
+//         // Récupérer l'ID de l'utilisateur et le nouveau statut à partir des paramètres de la requête
+//         const { id } = req.params;
+//         const { isAdmin } = req.body;
+
+//         // Trouver l'utilisateur dans la base de données
+//         const user = await User.findByPk(id);
+//         if (!user) return res.status(404).json("User not found!");
+
+//         // Mettre à jour le statut d'admin de l'utilisateur
+//         await user.update({ isAdmin });
+
+//         // Renvoyer la réponse avec le message de succès et les détails de l'utilisateur mis à jour
+//         res.status(200).json({
+//             message: "User admin status updated",
+//             user: {
+//                 id: user.id,
+//                 firstName: user.firstName,
+//                 lastName: user.lastName,
+//                 email: user.email,
+//                 isAdmin: user.isAdmin ? 'Oui' : 'Non', // Transformation pour la réponse
+//                 createdAt: user.createdAt
+//             }
+//         });
 //     } catch (error) {
-//         console.log("Error in deleteUser:", error);
+//         console.log("Error in updateAdminStatus:", error);
 //         res.status(500).json({ error: error.message });
 //     }
 // };
+
+
+// // Fonction pour supprimer un utilisateur
+// async function deleteUser(req, res) {
+//     try {
+//         const userId = req.params.id;
+//         await User.destroy({
+//             where: { id: userId }  // Remplacez userID par id
+//         });
+//         res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
+//     } catch (error) {
+//         console.error('Erreur dans deleteUser:', error);
+//         res.status(500).json({ message: 'Erreur lors de la suppression de l\'utilisateur' });
+//     }
+// }
+
+// // const deleteUser = async (req, res) => {
+// //     try {
+// //         const userDeleted = await User.destroy({ where: { userID: req.params.id } });
+// //         if (!userDeleted) return res.status(404).json("User not found!");
+// //         res.status(200).json({ message: "User deleted" });
+// //     } catch (error) {
+// //         console.log("Error in deleteUser:", error);
+// //         res.status(500).json({ error: error.message });
+// //     }
+// // };
 
 // // Fonction pour s'inscrire
 
@@ -426,7 +535,9 @@ export {
 //     getUserById,
 //     updateUser,
 //     deleteUser,
-//     getCurrentUser
+//     getCurrentUser,
+//     updateAdminStatus
 // };
+
 
 
