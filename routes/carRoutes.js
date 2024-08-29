@@ -14,7 +14,8 @@ const router = express.Router();
 router.get('/all', getAllCars);
 router.get('/:id', getCarById);
 router.post('/add', multer.single('image'),  createCar);
-router.put('/update/:id',  updateCar);
+//on test post au lieu de put
+router.post('/update/:id',  updateCar);
 router.delete('/delete/:id', deleteCar);
 
 

@@ -1,4 +1,6 @@
-// Importation des modèles Car et CarImage depuis le répertoire des modèles
+
+
+// Importation des modèles Car et CarImage depuis le répertoire des modèles VERSION OK !!! 
 import { Car, CarImage } from "../models/index.js";
 
 // Obtenir toutes les voitures
