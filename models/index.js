@@ -22,7 +22,8 @@ const connection = new Sequelize(
     '', // Mot de passe MySQL
     {
         host: 'localhost', // URL de MySQL
-        dialect: 'mysql' // Type de base de données
+        dialect: 'mysql', // Type de base de données
+       // logging: console.log, // Active les logs SQL
     }
 );
 

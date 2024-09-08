@@ -15,7 +15,7 @@ router.get('/all', getAllCars);
 router.get('/:id', getCarById);
 router.post('/add', multer.single('image'),  createCar);
 //on test post au lieu de put
-router.post('/update/:id',  updateCar);
+router.put('/update/:id',  multer.single('image'), updateCar);
 router.delete('/delete/:id', deleteCar);
 
 

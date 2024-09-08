@@ -1,3 +1,5 @@
+//src/middleware/auth.js
+
 import jwt from 'jsonwebtoken'
 import { env } from '../config.js'
 import { createError } from '../error.js'

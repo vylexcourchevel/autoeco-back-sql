@@ -3,7 +3,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import cors from 'cors';
+//import cors from 'cors';
 //import upload from './middleware/multer-config.js';
 
 // Importation des modules nécessaires
