@@ -30,6 +30,9 @@ const connection = new Sequelize(
 // Authentification et connexion à la base de données
 try {
     await connection.authenticate();
+    //await connection.sync({ force: true });
+    
+ 
     console.log('Connection has been established successfully.');
 } catch (error) {
     console.error('Unable to connect to the database:', error);

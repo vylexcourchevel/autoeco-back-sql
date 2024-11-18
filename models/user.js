@@ -1,3 +1,5 @@
+//TEST RAJOUT resetToken et resetTokenExpiration
+
 
 
 export default (connection, DataTypes) => {
@@ -37,15 +39,73 @@ export default (connection, DataTypes) => {
             isAdmin: {
               type: DataTypes.BOOLEAN,
               defaultValue: false
-            }
+            },
+            resetToken: {
+              type: DataTypes.STRING,
+              allowNull: true,
+          },
+            resetTokenExpiration: {
+              type: DataTypes.DATE,
+              allowNull: true,
+          },
+          
           },
             
           {
             timestamps: true
           }
 
+
      );
 };
+
+
+// export default (connection, DataTypes) => {
+
+//   connection.define(
+        
+//       'User',
+//             {
+//             // userID: {
+//             //   type: DataTypes.INTEGER,
+//             //   primaryKey: true,
+//             //   autoIncrement: true
+//             // },
+//             firstName: {
+//               type: DataTypes.STRING(100),
+//               allowNull: false
+//             },
+//             lastName: {
+//               type: DataTypes.STRING(100),
+//               allowNull: false
+//             },
+//             email: {
+//               type: DataTypes.STRING(150),
+//               unique: true
+//             },
+//             password: {
+//               type: DataTypes.STRING(150),
+            
+//           },
+//             address: {
+//               type: DataTypes.STRING(150),
+//               allowNull: false
+//             },
+//             phoneNumber: {
+//               type: DataTypes.STRING
+//             },
+//             isAdmin: {
+//               type: DataTypes.BOOLEAN,
+//               defaultValue: false
+//             }
+//           },
+            
+//           {
+//             timestamps: true
+//           }
+
+//      );
+// };
 
 
 // // models/user.js

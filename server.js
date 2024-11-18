@@ -16,6 +16,9 @@ import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 
+
+
+
 //Middleware pour gérer les problèmes de CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
