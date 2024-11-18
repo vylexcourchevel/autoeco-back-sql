@@ -1,178 +1,437 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { User } from '../models/index.js';
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
+dotenv.config();
 
- //controller/userController.js VERSION TEST  ajout une fonctionalité de recuperation des mots de passe 
-
- import bcrypt from 'bcrypt'; 
-import jwt from 'jsonwebtoken'; 
-import { User } from '../models/index.js'; 
-import dotenv from 'dotenv'; 
-import nodemailer from 'nodemailer'; 
-
-dotenv.config(); 
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_PASS = process.env.GMAIL_PASS;
 
 // Fonction pour générer le token de réinitialisation
-//fonction génere un JWT qui permet de réinitialiser le mot de passe avec userID
 const generateResetToken = (userId) => {
-    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Utilisation du secret du .env
-};
-
-// Vérifier la validité du token de réinitialisation
-/// Cette fonction vérifie si le token de réinitialisation est valide
-//le token est extrait du corps de la larequete  (req.body.token).
-//jwt.verify() : Vérifie la validité du token en utilisant le secret
-const verifyResetToken = async (req, res) => {
-    const { token } = req.body;
-  
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Utilisation du secret du .env
-        res.status(200).json({ success: true });
-    } catch (error) {
-        res.status(400).json({ success: false, message: 'Token invalide ou expiré' });
-    }
+    console.log("generateResetToken - Génération d'un token pour l'utilisateur ID:", userId);
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
 // Fonction pour la demande de réinitialisation de mot de passe
-//Elle prend l'email de l'utilisateur à partir du corps de la requête.
-//Recherche de l'utilisateur dans la base de données avec cet email.
-//Si l'utilisateur est trouvé, un token de réinitialisation est généré.
-//Un lien de réinitialisation est créé avec ce token et envoyé à l'utilisateur par email via Nodemailer.
-//L'email est envoyé à l'adresse user.email.
 const requestPasswordReset = async (req, res) => {
+    console.log("requestPasswordReset - Email reçu:", req.body.email);
+
     const { email } = req.body;
 
     if (!email) {
+        console.log("requestPasswordReset - Erreur: Email requis.");
         return res.status(400).json({ message: 'L\'email est requis.' });
     }
 
     try {
         const user = await User.findOne({ where: { email } });
         if (!user) {
+            console.log("requestPasswordReset - Utilisateur non trouvé pour l'email:", email);
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
-        // Générer le token de réinitialisation
         const resetToken = generateResetToken(user.id);
+
+        // Débogage : Décodage du token généré pour voir son contenu
+        const decoded = jwt.decode(resetToken);
+        console.log("requestPasswordReset - Token décodé:", decoded); // Affichage du contenu du token
+
         const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+        console.log("requestPasswordReset - URL de réinitialisation générée:", resetUrl);
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASS,
+                user: GMAIL_USER,
+                pass: GMAIL_PASS,
             },
         });
 
         await transporter.sendMail({
-            from: 'vighen.agopoff@gmail.com',
+            from: GMAIL_USER,
             to: user.email,
             subject: 'Réinitialisation de votre mot de passe',
             html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe : <a href="${resetUrl}">${resetUrl}</a></p>`,
         });
 
-        return res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
+        console.log("requestPasswordReset - Email envoyé avec succès à:", user.email);
+        res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Une erreur est survenue.' });
+        console.error("requestPasswordReset - Erreur:", err);
+        res.status(500).json({ message: 'Une erreur est survenue.' });
+    }
+};
+
+// Vérifier la validité du token de réinitialisation
+const verifyResetToken = async (req, res) => {
+    console.log("verifyResetToken - Vérification du token:", req.body.token);
+
+    const { token } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("verifyResetToken - Token valide:", decoded);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("verifyResetToken - Erreur lors de la vérification du token:", error);
+        res.status(400).json({ success: false, message: 'Token invalide ou expiré' });
     }
 };
 
 // Fonction pour la réinitialisation du mot de passe
-//Le token et le nouveau mot de passe sont extraits du corps de la requête.
-//Le token est vérifié pour extraire l'ID de l'utilisateur.
-//L'utilisateur est recherché par son ID. Si l'utilisateur n'existe pas, une erreur est renvoyée.
-//Le mot de passe de l'utilisateur est mis à jour avec le nouveau mot de passe.
-//Important : Le mot de passe doit être haché avant de l'enregistrer en base de données, ce qui ne se fait pas ici. 
-//Vous devez utiliser bcrypt pour hacher le mot de passe avant de l'enregistrer.
-//Enfin, l'utilisateur est sauvegardé, et un message de succès est renvoyé.
-
 const resetPassword = async (req, res) => {
+    console.log("resetPassword - Requête reçue:", req.body);
+
     const { token, newPassword } = req.body;
 
-    // Log des données reçues dans la requête
-    console.log('Réinitialisation du mot de passe - Token reçu:', token);
-    console.log('Nouveau mot de passe reçu:', newPassword);
-
-    // Vérification que le mot de passe a bien été fourni
     if (!newPassword) {
-        console.log('Erreur : le mot de passe est requis.');
+        console.log("resetPassword - Erreur: Mot de passe requis.");
         return res.status(400).json({ message: 'Le mot de passe est requis.' });
     }
 
     try {
-        // Vérification du token
-        console.log('Vérification du token...');
+        console.log("resetPassword - Vérification du token...");
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.userId;
-        console.log('Token vérifié, userId:', userId);
+        console.log("resetPassword - Token décodé:", decoded);
 
-        // Recherche de l'utilisateur dans la base de données
-        const user = await User.findByPk(userId);  // Utilisation de `findByPk` pour Sequelize
+        const user = await User.findByPk(decoded.userId);
         if (!user) {
-            console.log('Erreur : utilisateur non trouvé');
+            console.log("resetPassword - Utilisateur non trouvé pour l'ID:", decoded.userId);
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
 
-        // Hachage du mot de passe
-        console.log('Hachage du mot de passe...');
-        const hashedPassword = await bcrypt.hash(newPassword, 10); // Hachage du nouveau mot de passe
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        console.log("resetPassword - Nouveau mot de passe haché.");
+
         user.password = hashedPassword;
-
-        // Sauvegarde de l'utilisateur avec le nouveau mot de passe
         await user.save();
-        console.log('Mot de passe réinitialisé avec succès pour l\'utilisateur:', user.email);
 
-        return res.status(200).json({ message: 'Mot de passe réinitialisé avec succès.' });
+        console.log("resetPassword - Mot de passe mis à jour pour l'utilisateur:", user.email);
+        res.status(200).json({ message: 'Mot de passe réinitialisé avec succès.' });
     } catch (err) {
-        console.error('Erreur lors de la réinitialisation du mot de passe:', err);
-        return res.status(400).json({ message: 'Le token est invalide ou expiré.' });
+        console.error("resetPassword - Erreur:", err);
+        res.status(400).json({ message: 'Le token est invalide ou expiré.' });
     }
 };
 
-// Fonction pour gérer la connexion des utilisateurs
-//L'email et le mot de passe de l'utilisateur sont extraits du corps de la requête.
-//Recherche de l'utilisateur dans la base de données en fonction de l'email.
-//Si l'utilisateur existe, son mot de passe est comparé au mot de passe haché en base de données.
-//Si le mot de passe est correct, un token JWT est généré et envoyé au client.
-//Le token est stocké dans un cookie HTTP Only, ce qui le rend plus sécurisé.
-//Si une erreur survient, un message d'erreur est renvoyé.
 
-const login = async (req, res) => {
-    try {
-        console.log("Logging in user with email:", req.body.email);
 
-        const user = await User.findOne({ where: { email: req.body.email } });
+// import bcrypt from 'bcrypt';
+// import jwt from 'jsonwebtoken';
+// import { User } from '../models/index.js';
+// import dotenv from 'dotenv';
+// import nodemailer from 'nodemailer';
+
+// dotenv.config();
+
+// const GMAIL_USER = process.env.GMAIL_USER;
+// const GMAIL_PASS = process.env.GMAIL_PASS;
+
+// // Fonction pour générer le token de réinitialisation
+// const generateResetToken = (userId) => {
+//     console.log("generateResetToken - Génération d'un token pour l'utilisateur ID:", userId);
+//     return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+// };
+
+// // Fonction pour la demande de réinitialisation de mot de passe
+// const requestPasswordReset = async (req, res) => {
+//     console.log("requestPasswordReset - Email reçu:", req.body.email);
+
+//     const { email } = req.body;
+
+//     if (!email) {
+//         console.log("requestPasswordReset - Erreur: Email requis.");
+//         return res.status(400).json({ message: 'L\'email est requis.' });
+//     }
+
+//     try {
+//         const user = await User.findOne({ where: { email } });
+//         if (!user) {
+//             console.log("requestPasswordReset - Utilisateur non trouvé pour l'email:", email);
+//             return res.status(404).json({ message: 'Utilisateur non trouvé' });
+//         }
+
+//         const resetToken = generateResetToken(user.id);
         
+//         // Débogage : Décodage du token généré pour voir son contenu
+//         const decoded = jwt.decode(resetToken);
+//         console.log("requestPasswordReset - Token décodé:", decoded); // Affichage du contenu du token
+
+//         const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+//         console.log("requestPasswordReset - URL de réinitialisation générée:", resetUrl);
+
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 user: GMAIL_USER,
+//                 pass: GMAIL_PASS,
+//             },
+//         });
+
+//         await transporter.sendMail({
+//             from: GMAIL_USER,
+//             to: user.email,
+//             subject: 'Réinitialisation de votre mot de passe',
+//             html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe : <a href="${resetUrl}">${resetUrl}</a></p>`,
+//         });
+
+//         console.log("requestPasswordReset - Email envoyé avec succès à:", user.email);
+//         res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
+//     } catch (err) {
+//         console.error("requestPasswordReset - Erreur:", err);
+//         res.status(500).json({ message: 'Une erreur est survenue.' });
+//     }
+// };
+
+// // Vérifier la validité du token de réinitialisation
+// const verifyResetToken = async (req, res) => {
+//     console.log("verifyResetToken - Vérification du token:", req.body.token);
+
+//     const { token } = req.body;
+
+//     try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         console.log("verifyResetToken - Token valide:", decoded);
+//         res.status(200).json({ success: true });
+//     } catch (error) {
+//         console.error("verifyResetToken - Erreur lors de la vérification du token:", error);
+//         res.status(400).json({ success: false, message: 'Token invalide ou expiré' });
+//     }
+// };
+
+// // Fonction pour la réinitialisation du mot de passe
+// const resetPassword = async (req, res) => {
+//     console.log("resetPassword - Requête reçue:", req.body);
+
+//     const { token, newPassword } = req.body;
+
+//     if (!newPassword) {
+//         console.log("resetPassword - Erreur: Mot de passe requis.");
+//         return res.status(400).json({ message: 'Le mot de passe est requis.' });
+//     }
+
+//     try {
+//         console.log("resetPassword - Vérification du token...");
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         console.log("resetPassword - Token décodé:", decoded);
+
+//         const user = await User.findByPk(decoded.userId);
+//         if (!user) {
+//             console.log("resetPassword - Utilisateur non trouvé pour l'ID:", decoded.userId);
+//             return res.status(404).json({ message: 'Utilisateur non trouvé' });
+//         }
+
+//         const hashedPassword = await bcrypt.hash(newPassword, 10);
+//         console.log("resetPassword - Nouveau mot de passe haché.");
+
+//         user.password = hashedPassword;
+//         await user.save();
+
+//         console.log("resetPassword - Mot de passe mis à jour pour l'utilisateur:", user.email);
+//         res.status(200).json({ message: 'Mot de passe réinitialisé avec succès.' });
+//     } catch (err) {
+//         console.error("resetPassword - Erreur:", err);
+//         res.status(400).json({ message: 'Le token est invalide ou expiré.' });
+//     }
+// };
+
+// Fonction pour gérer la connexion des utilisateurs
+const login = async (req, res) => {
+    console.log("login - Tentative de connexion avec email:", req.body.email);
+
+    try {
+        const user = await User.findOne({ where: { email: req.body.email } });
         if (!user) {
-            console.log("User not found");
+            console.log("login - Utilisateur non trouvé.");
             return res.status(404).json("User not found!");
         }
 
         const comparePassword = await bcrypt.compare(req.body.password, user.password);
-        
         if (!comparePassword) {
-            console.log("Wrong Credentials");
+            console.log("login - Mot de passe incorrect.");
             return res.status(400).json("Wrong Credentials!");
         }
-//TEST VIGHEN Générer un token JWT pour l'utilisateur
+
         const token = jwt.sign(
             { id: user.id },
-            process.env.TOKEN  || process.env.JWT_SECRET,
+            process.env.TOKEN || process.env.JWT_SECRET,
             { expiresIn: "24h" }
         );
 
-        console.log("Token created:", token);
-        console.log(user);
+        console.log("login - Token JWT généré:", token);
 
         res.cookie("access_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict'
         }).status(200).json(user);
+
+        console.log("login - Connexion réussie pour l'utilisateur:", user.email);
     } catch (e) {
-        console.log("Error in login:", e);
+        console.error("login - Erreur lors de la connexion:", e);
         res.status(500).json({ error: e.message });
     }
 };
+
+
+// import bcrypt from 'bcrypt';
+// import jwt from 'jsonwebtoken';
+// import { User } from '../models/index.js';
+// import dotenv from 'dotenv';
+// import nodemailer from 'nodemailer';
+
+// dotenv.config();
+
+// const GMAIL_USER = process.env.GMAIL_USER;
+// const GMAIL_PASS = process.env.GMAIL_PASS;
+
+
+// // Fonction pour générer le token de réinitialisation
+// const generateResetToken = (userId) => {
+//     console.log("generateResetToken - Génération d'un token pour l'utilisateur ID:", userId);
+//     return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+// };
+
+// // Fonction pour la demande de réinitialisation de mot de passe
+// const requestPasswordReset = async (req, res) => {
+//     console.log("requestPasswordReset - Email reçu:", req.body.email);
+
+//     const { email } = req.body;
+
+//     if (!email) {
+//         console.log("requestPasswordReset - Erreur: Email requis.");
+//         return res.status(400).json({ message: 'L\'email est requis.' });
+//     }
+
+//     try {
+//         const user = await User.findOne({ where: { email } });
+//         if (!user) {
+//             console.log("requestPasswordReset - Utilisateur non trouvé pour l'email:", email);
+//             return res.status(404).json({ message: 'Utilisateur non trouvé' });
+//         }
+
+//         const resetToken = generateResetToken(user.id);
+//         const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+//         console.log("requestPasswordReset - URL de réinitialisation générée:", resetUrl);
+
+        
+
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 user: GMAIL_USER,
+//                 pass: GMAIL_PASS,
+//             },
+//         });
+
+//         await transporter.sendMail({
+//             from: GMAIL_USER,
+//             to: user.email,
+//             subject: 'Réinitialisation de votre mot de passe',
+//             html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe : <a href="${resetUrl}">${resetUrl}</a></p>`,
+//         });
+
+//         console.log("requestPasswordReset - Email envoyé avec succès à:", user.email);
+//         res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
+//     } catch (err) {
+//         console.error("requestPasswordReset - Erreur:", err);
+//         res.status(500).json({ message: 'Une erreur est survenue.' });
+//     }
+// };
+
+
+// // Vérifier la validité du token de réinitialisation
+// const verifyResetToken = async (req, res) => {
+//     console.log("verifyResetToken - Vérification du token:", req.body.token);
+
+//     const { token } = req.body;
+
+//     try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         console.log("verifyResetToken - Token valide:", decoded);
+//         res.status(200).json({ success: true });
+//     } catch (error) {
+//         console.error("verifyResetToken - Erreur lors de la vérification du token:", error);
+//         res.status(400).json({ success: false, message: 'Token invalide ou expiré' });
+//     }
+// };
+
+// // Fonction pour la réinitialisation du mot de passe
+// const resetPassword = async (req, res) => {
+//     console.log("resetPassword - Requête reçue:", req.body);
+
+//     const { token, newPassword } = req.body;
+
+//     if (!newPassword) {
+//         console.log("resetPassword - Erreur: Mot de passe requis.");
+//         return res.status(400).json({ message: 'Le mot de passe est requis.' });
+//     }
+
+//     try {
+//         console.log("resetPassword - Vérification du token...");
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         console.log("resetPassword - Token décodé:", decoded);
+
+//         const user = await User.findByPk(decoded.userId);
+//         if (!user) {
+//             console.log("resetPassword - Utilisateur non trouvé pour l'ID:", decoded.userId);
+//             return res.status(404).json({ message: 'Utilisateur non trouvé' });
+//         }
+
+//         const hashedPassword = await bcrypt.hash(newPassword, 10);
+//         console.log("resetPassword - Nouveau mot de passe haché.");
+
+//         user.password = hashedPassword;
+//         await user.save();
+
+//         console.log("resetPassword - Mot de passe mis à jour pour l'utilisateur:", user.email);
+//         res.status(200).json({ message: 'Mot de passe réinitialisé avec succès.' });
+//     } catch (err) {
+//         console.error("resetPassword - Erreur:", err);
+//         res.status(400).json({ message: 'Le token est invalide ou expiré.' });
+//     }
+// };
+
+// // Fonction pour gérer la connexion des utilisateurs
+// const login = async (req, res) => {
+//     console.log("login - Tentative de connexion avec email:", req.body.email);
+
+//     try {
+//         const user = await User.findOne({ where: { email: req.body.email } });
+//         if (!user) {
+//             console.log("login - Utilisateur non trouvé.");
+//             return res.status(404).json("User not found!");
+//         }
+
+//         const comparePassword = await bcrypt.compare(req.body.password, user.password);
+//         if (!comparePassword) {
+//             console.log("login - Mot de passe incorrect.");
+//             return res.status(400).json("Wrong Credentials!");
+//         }
+
+//         const token = jwt.sign(
+//             { id: user.id },
+//             process.env.TOKEN || process.env.JWT_SECRET,
+//             { expiresIn: "24h" }
+//         );
+
+//         console.log("login - Token JWT généré:", token);
+
+//         res.cookie("access_token", token, {
+//             httpOnly: true,
+//             secure: process.env.NODE_ENV === 'production',
+//             sameSite: 'Strict'
+//         }).status(200).json(user);
+
+//         console.log("login - Connexion réussie pour l'utilisateur:", user.email);
+//     } catch (e) {
+//         console.error("login - Erreur lors de la connexion:", e);
+//         res.status(500).json({ error: e.message });
+//     }
+// };
 
 // const login = async (req, res) => {
 //     const { email, password } = req.body;

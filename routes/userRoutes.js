@@ -47,7 +47,7 @@ router.post('/logout', logout);
 
 //routes pour resetPassword  TEST VIGHEN 
 router.post('/forgot-password', requestPasswordReset);  // Envoi du lien de réinitialisation
-router.post('/reset-password/:token', resetPassword);  // Réinitialisation du mot de passe
+router.post('/reset-password', resetPassword);  // Réinitialisation du mot de passe
 
 // Route pour vérifier la validité du token
 //router.post('/verify-reset-token', verifyToken);
