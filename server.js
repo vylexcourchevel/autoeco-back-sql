@@ -3,7 +3,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-//import cors from 'cors';
+import cors from 'cors';
 //import upload from './middleware/multer-config.js';
 
 // Importation des modules nécessaires
@@ -24,14 +24,17 @@ const app = express();
 
 
 //Middleware pour gérer les problèmes de CORS
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  return next();
-});
-
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   return next();
+// });
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}))
 
 
 

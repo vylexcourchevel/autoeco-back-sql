@@ -1,14 +1,14 @@
 // Importation des modèles nécessaires pour les réservations, voitures, utilisateurs, et images de voiture
 import { Reservation, Car, User, CarImage } from "../models/index.js";
 // Importation du service d'envoi d'email pour envoyer la confirmation après la création de la réservation
-import { sendConfirmationEmail } from '../services/emailService.js'; 
+import { sendConfirmationEmail } from '../services/emailService.js';
 
 // Fonction pour créer une nouvelle réservation
 const createReservation = async (req, res) => {
   try {
     // Récupération de l'ID de l'utilisateur connecté (dérivé du token ou session)
     const userId = req.user.id;
-    
+
     // Récupération des données de la réservation à partir de la requête
     const data = {
       startDate: req.body.startDate,  // Date de début de la réservation
@@ -41,10 +41,7 @@ const createReservation = async (req, res) => {
       pricePerDay: car.pricePerDay,  // Prix par jour de location
       imageURL: car.CarImages.length > 0 ? `http://localhost:8002${car.CarImages[0].imageURL}` : null // URL de l'image de la voiture
     };
-    console.log(carDetails);
-    console.log(clientEmail);
-    console.log('Tentative d\'envoi de l\'email de confirmation...');
-  
+
     // Appel de la fonction d'envoi d'email
     await sendConfirmationEmail(clientEmail, {
       carDetails,
