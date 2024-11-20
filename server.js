@@ -13,6 +13,10 @@ import carRoutes from './routes/carRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
+//ROUTES STRIPE 
+
+import stripeRoutes from './routes/stripe.router.js';
+
 
 const app = express();
 
@@ -46,6 +50,9 @@ app.use('/api/cars', carRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/payments', paymentRoutes);
+
+//STRIPE 
+app.use('/api/stripe', stripeRoutes);
 
 
 app.listen(PORT, () => {

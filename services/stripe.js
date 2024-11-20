@@ -1,12 +1,8 @@
 // import Stripe from "stripe";
-// import ENV from "../config.js";
+// import dotenv from "dotenv";
 
+// dotenv.config();
 
-// const stripe = new Stripe(ENV.SECRET_KEYSTRIPE);
+// const stripe = new Stripe(process.env.SECRET_KEYSTRIPE);
 
-//export default stripe
-
-const ENV = require("../config.js");
-const stripe = require("stripe")(ENV.SECRET_KEYSTRIPE);
-
-module.exports = stripe
+// export default stripe; // Assurez-vous d'utiliser "export default"
