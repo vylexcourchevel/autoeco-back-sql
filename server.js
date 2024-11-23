@@ -31,16 +31,21 @@ const app = express();
 //   res.setHeader("Access-Control-Allow-Credentials", true);
 //   return next();
 // });
+// app.use(cors({
+//   origin: "http://localhost:3000",
+//   credentials: true
+// }))
+
+//TEST VIGHEN ADRESSE DEPLOIEMENT SITE 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "https://react-autoeco-vighen.onrender.com",
   credentials: true
 }))
 
 
-
 // Définition du port
 dotenv.config();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8002;
 app.use(express.static('public'));
 
 // Middleware pour traiter les requêtes JSON

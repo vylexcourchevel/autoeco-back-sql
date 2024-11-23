@@ -39,7 +39,7 @@ const createReservation = async (req, res) => {
       model: car.model,          // Modèle de la voiture
       years: car.years,          // Année de fabrication de la voiture
       pricePerDay: car.pricePerDay,  // Prix par jour de location
-      imageURL: car.CarImages.length > 0 ? `http://localhost:8002${car.CarImages[0].imageURL}` : null // URL de l'image de la voiture
+      imageURL: car.CarImages.length > 0 ? `https://react-autoeco-vighen.onrender.com${car.CarImages[0].imageURL}` : null // URL de l'image de la voiture
     };
 
     // Appel de la fonction d'envoi d'email

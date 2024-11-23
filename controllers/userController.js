@@ -33,8 +33,9 @@ const requestPasswordReset = async (req, res) => {
 
         // Débogage : Décodage du token généré pour voir son contenu
         const decoded = jwt.decode(resetToken);
+        //CHANGE URL DEPLOIEMENT TEST VIGHEN
 
-        const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+        const resetUrl = `https://react-autoeco-vighen.onrender.com/reset-password/${resetToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
