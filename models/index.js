@@ -16,6 +16,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+console.log('DB_HOST:', process.env.DB_HOST);
+
+
 // Connexion à la base de données
 const connection = new Sequelize(
     process.env.DB_NAME,
@@ -36,7 +42,8 @@ console.log('Hôte :', process.env.DB_HOST);
 (async () => {
     try {
         //await connection.authenticate();
-        await connection.sync({ force: true });
+       // await connection.sync({ force: true });
+       await connection.sync({ alter: true });
         console.log('Connexion réussie à la base de données');
     } catch (error) {
         console.error('Impossible de se connecter à la base de données :', error);
@@ -96,7 +103,7 @@ const createAdminIfNeeded = async () => {
 (async () => {
   try {
    // await connection.sync();
-   await connection.sync({ force: true });
+   await connection.sync({ alter: true });
 
     console.log('Base de données synchronisée');
 
