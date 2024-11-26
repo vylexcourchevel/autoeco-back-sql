@@ -13,7 +13,7 @@ dotenv.config();
 
 // Initialiser l'application Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 
 // Connexion à la base de données avec les variables d'environnement
 const connection = new Sequelize(
@@ -23,9 +23,14 @@ const connection = new Sequelize(
     {
         host: process.env.DB_HOST,    // URL de MySQL
         dialect: process.env.DB_DIALECT,  // Type de base de données
+        port: process.env.DB_PORT, 
         logging: console.log,         // Active les logs SQL (peut être désactivé en mettant `false`)
     }
 );
+console.log('Nom de la base :', process.env.DB_NAME);
+console.log('Utilisateur :', process.env.DB_USER);
+console.log('Hôte :', process.env.DB_HOST);
+
 
 // Authentification et connexion à la base de données
 (async () => {
@@ -71,7 +76,8 @@ Reservation.belongsTo(Car);
 
 // Synchroniser les modèles avec la base de données
 (async () => {
-    await connection.sync();
+  await connection.sync();
+   //sequelize.sync({ force: true })
     console.log('Base de données synchronisée');
 })();
 
