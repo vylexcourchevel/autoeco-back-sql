@@ -1,8 +1,9 @@
+
 // TEST pour utiliser la chaîne de connexion complète
 import express from 'express';
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';  // Import de bcrypt pour le hashage des mots de passe
+import bcrypt from 'bcrypt'; // Import de bcrypt pour le hashage des mots de passe
 
 import carModel from './car.js';
 import carImageModel from './carImage.js';
@@ -12,7 +13,7 @@ import userModel from './user.js';
 
 dotenv.config();
 
-console.log('DB_URL:', process.env.DB_URL);  // Vérification
+console.log('DB_URL:', process.env.DB_URL); // Vérification
 
 if (!process.env.DB_URL) {
   console.error('Erreur critique : DB_URL est undefined');
@@ -23,23 +24,20 @@ if (!process.env.DB_URL) {
 const app = express();
 const PORT = process.env.PORT;
 
-console.log('DB_URL:', process.env.DB_URL);  // Afficher l'URL de la base de données
-
 // Connexion à la base de données avec la chaîne de connexion complète
 const connection = new Sequelize(process.env.DB_URL, {
-    dialect: 'mysql',
-    logging: console.log,  // Facultatif, pour activer les logs SQL
+  dialect: 'mysql',
+  logging: console.log, // Facultatif, pour activer les logs SQL
 });
 
-console.log('Nom de la base :', process.env.DB_URL);
 // Authentification de la base de données
 (async () => {
-    try {
-        await connection.authenticate();
-        console.log('Connexion réussie à la base de données');
-    } catch (error) {
-        console.error('Impossible de se connecter à la base de données :', error);
-    }
+  try {
+    await connection.authenticate();
+    console.log('Connexion réussie à la base de données');
+  } catch (error) {
+    console.error('Impossible de se connecter à la base de données :', error);
+  }
 })();
 
 // Initialisation des modèles
@@ -70,16 +68,17 @@ Reservation.belongsTo(Car);
 // Fonction pour créer un administrateur si nécessaire
 const createAdminIfNeeded = async () => {
   try {
-    const adminExists = await User.findOne({ where: { role: 'admin' } });
+    const adminExists = await User.findOne({ where: { isAdmin: true } }); // Utilisation de isAdmin
 
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('password123', 10);
 
       await User.create({
-        username: 'admin',
-        email: 'admin@example.com',
+        firstName: 'Vighen',               // Ajout d'un prénom (en supposant qu'il est requis)
+        lastName: 'Admin',                 // Ajout d'un nom de famille
+        email: 'vighen@hotmai.fr',
         password: hashedPassword,
-        role: 'admin',
+        isAdmin: true,                     // Utilisation de isAdmin pour définir l'administrateur
       });
 
       console.log('Administrateur créé avec succès.');
@@ -96,18 +95,18 @@ const createAdminIfNeeded = async () => {
   try {
     await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
     console.log('Base de données synchronisée');
-    await createAdminIfNeeded();  // Appel de la fonction de création d'admin
+    await createAdminIfNeeded(); // Appel de la fonction de création d'admin
   } catch (error) {
     console.error('Erreur lors de la synchronisation de la base de données :', error);
   }
 })();
 
 export {
-    Car,
-    CarImage,
-    Payment,
-    Reservation,
-    User
+  Car,
+  CarImage,
+  Payment,
+  Reservation,
+  User
 };
 
 
