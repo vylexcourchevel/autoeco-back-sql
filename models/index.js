@@ -1,4 +1,4 @@
-// TEST AJJOUT DE ADMIN TEMPORAIRE POUR ACCEDER A LA BDD 
+// TEST pour utiliser la chaîne de connexion complète
 import express from 'express';
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
@@ -16,34 +16,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 
-console.log('DB_NAME:', process.env.DB_NAME);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_URL:', process.env.DB_URL);  // Afficher l'URL de la base de données
 
+// Connexion à la base de données avec la chaîne de connexion complète
+const connection = new Sequelize(process.env.DB_URL, {
+    dialect: 'mysql',
+    logging: console.log,  // Facultatif, pour activer les logs SQL
+});
 
-// Connexion à la base de données
-const connection = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
-        port: process.env.DB_PORT,
-        logging: console.log,
-    }
-);
-console.log('Nom de la base :', process.env.DB_NAME);
-console.log('Utilisateur :', process.env.DB_USER);
-console.log('Hôte :', process.env.DB_HOST);
-
+console.log('Nom de la base :', process.env.DB_URL);
 // Authentification de la base de données
 (async () => {
     try {
-        //await connection.authenticate();
-       // await connection.sync({ force: true });
-       await connection.sync({ alter: true });
+        await connection.authenticate();
         console.log('Connexion réussie à la base de données');
     } catch (error) {
         console.error('Impossible de se connecter à la base de données :', error);
@@ -102,26 +87,13 @@ const createAdminIfNeeded = async () => {
 // Synchroniser les modèles et créer l'administrateur
 (async () => {
   try {
-   // await connection.sync();
-   await connection.sync({ alter: true });
-
+    await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
     console.log('Base de données synchronisée');
-
     await createAdminIfNeeded();  // Appel de la fonction de création d'admin
   } catch (error) {
     console.error('Erreur lors de la synchronisation de la base de données :', error);
   }
 })();
-(async () => {
-    try {
-      console.log('Tentative de connexion à la base de données...');
-      await connection.authenticate();
-      console.log('Connexion réussie à la base de données');
-    } catch (error) {
-      console.error('Impossible de se connecter à la base de données :', error);
-    }
-  })();
-  
 
 export {
     Car,
@@ -130,6 +102,141 @@ export {
     Reservation,
     User
 };
+
+
+// // TEST AJJOUT DE ADMIN TEMPORAIRE POUR ACCEDER A LA BDD 
+// import express from 'express';
+// import { Sequelize } from 'sequelize';
+// import dotenv from 'dotenv';
+// import bcrypt from 'bcrypt';  // Import de bcrypt pour le hashage des mots de passe
+
+// import carModel from './car.js';
+// import carImageModel from './carImage.js';
+// import paymentModel from './payment.js';
+// import reservationModel from './reservation.js';
+// import userModel from './user.js';
+
+// dotenv.config();
+
+// // Initialiser l'application Express
+// const app = express();
+// const PORT = process.env.PORT;
+
+// console.log('DB_NAME:', process.env.DB_NAME);
+// console.log('DB_USER:', process.env.DB_USER);
+// console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+// console.log('DB_HOST:', process.env.DB_HOST);
+
+
+// // Connexion à la base de données
+// const connection = new Sequelize(
+//     process.env.DB_NAME,
+//     process.env.DB_USER,
+//     process.env.DB_PASSWORD,
+//     {
+//         host: process.env.DB_HOST,
+//         dialect: process.env.DB_DIALECT,
+//         port: process.env.DB_PORT,
+//         logging: console.log,
+//     }
+// );
+// console.log('Nom de la base :', process.env.DB_NAME);
+// console.log('Utilisateur :', process.env.DB_USER);
+// console.log('Hôte :', process.env.DB_HOST);
+
+// // Authentification de la base de données
+// (async () => {
+//     try {
+//         //await connection.authenticate();
+//        // await connection.sync({ force: true });
+//        await connection.sync({ alter: true });
+//         console.log('Connexion réussie à la base de données');
+//     } catch (error) {
+//         console.error('Impossible de se connecter à la base de données :', error);
+//     }
+// })();
+
+// // Initialisation des modèles
+// carModel(connection, Sequelize);
+// carImageModel(connection, Sequelize);
+// paymentModel(connection, Sequelize);
+// reservationModel(connection, Sequelize);
+// userModel(connection, Sequelize);
+
+// // Définition des relations entre les modèles
+// const { Car, CarImage, Payment, Reservation, User } = connection.models;
+
+// User.hasMany(Reservation);
+// Reservation.belongsTo(User);
+
+// Reservation.hasMany(Payment);
+// Payment.belongsTo(Reservation);
+
+// Payment.belongsTo(User);
+// User.hasMany(Payment);
+
+// Car.hasMany(CarImage);
+// CarImage.belongsTo(Car);
+
+// Car.hasMany(Reservation);
+// Reservation.belongsTo(Car);
+
+// // Fonction pour créer un administrateur si nécessaire
+// const createAdminIfNeeded = async () => {
+//   try {
+//     const adminExists = await User.findOne({ where: { role: 'admin' } });
+
+//     if (!adminExists) {
+//       const hashedPassword = await bcrypt.hash('password123', 10);
+
+//       await User.create({
+//         username: 'admin',
+//         email: 'admin@example.com',
+//         password: hashedPassword,
+//         role: 'admin',
+//       });
+
+//       console.log('Administrateur créé avec succès.');
+//     } else {
+//       console.log('Un administrateur existe déjà.');
+//     }
+//   } catch (error) {
+//     console.error('Erreur lors de la création de l\'administrateur :', error);
+//   }
+// };
+
+// // Synchroniser les modèles et créer l'administrateur
+// (async () => {
+//   try {
+//    // await connection.sync();
+//    //await connection.sync({ force: true });
+//    await connection.sync({ alter: true });
+
+//     console.log('Base de données synchronisée');
+
+//     await createAdminIfNeeded();  // Appel de la fonction de création d'admin
+//   } catch (error) {
+//     console.error('Erreur lors de la synchronisation de la base de données :', error);
+//   }
+// })();
+// (async () => {
+//     try {
+//       console.log('Tentative de connexion à la base de données...');
+//       await connection.authenticate();
+//       console.log('Connexion réussie à la base de données');
+//     } catch (error) {
+//       console.error('Impossible de se connecter à la base de données :', error);
+//     }
+//   })();
+  
+
+// export {
+//     Car,
+//     CarImage,
+//     Payment,
+//     Reservation,
+//     User
+// };
 
 //index.js
 // import express from 'express';
