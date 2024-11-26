@@ -12,6 +12,13 @@ import userModel from './user.js';
 
 dotenv.config();
 
+console.log('DB_URL:', process.env.DB_URL);  // Vérification
+
+if (!process.env.DB_URL) {
+  console.error('Erreur critique : DB_URL est undefined');
+  process.exit(1); // Arrête le processus si la variable est manquante
+}
+
 // Initialiser l'application Express
 const app = express();
 const PORT = process.env.PORT;
