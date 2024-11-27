@@ -113,7 +113,7 @@
 // TEST AJJOUT DE ADMIN TEMPORAIRE POUR ACCEDER A LA BDD 
 
 
-index.js
+//index.js
 import express from 'express';
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';  // Import dotenv pour charger les variables d'environnement
