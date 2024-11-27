@@ -1,5 +1,4 @@
 
-// TEST pour utiliser la chaîne de connexion complète
 import express from 'express';
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
@@ -13,19 +12,20 @@ import userModel from './user.js';
 
 dotenv.config();
 
-console.log('DB_URL:', process.env.DB_URL); // Vérification
-
-if (!process.env.DB_URL) {
+// Vérification de la variable d'environnement DB_URL
+const dbUrl = process.env.DB_URL;
+if (!dbUrl) {
   console.error('Erreur critique : DB_URL est undefined');
   process.exit(1); // Arrête le processus si la variable est manquante
 }
+console.log('DB_URL:', dbUrl); // Vérification
 
 // Initialiser l'application Express
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8000; // Utilisation d'une valeur par défaut si PORT est undefined
 
-// Connexion à la base de données avec la chaîne de connexion complète
-const connection = new Sequelize(process.env.DB_URL, {
+// Connexion à la base de données avec Sequelize
+const connection = new Sequelize(dbUrl, {
   dialect: 'mysql',
   logging: console.log, // Facultatif, pour activer les logs SQL
 });
@@ -37,6 +37,7 @@ const connection = new Sequelize(process.env.DB_URL, {
     console.log('Connexion réussie à la base de données');
   } catch (error) {
     console.error('Impossible de se connecter à la base de données :', error);
+    process.exit(1); // Arrête le processus en cas d'échec de la connexion
   }
 })();
 
@@ -68,21 +69,18 @@ Reservation.belongsTo(Car);
 // Fonction pour créer un administrateur si nécessaire
 const createAdminIfNeeded = async () => {
   try {
-    const adminExists = await User.findOne({ where: { isAdmin: true } }); // Utilisation de isAdmin
-
+    const adminExists = await User.findOne({ where: { isAdmin: true } });
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('password123', 10);
-
       await User.create({
-        firstName: 'Vighen',               // Ajout d'un prénom (en supposant qu'il est requis)
-        lastName: 'Admin',                 // Ajout d'un nom de famille
+        firstName: 'Vighen',
+        lastName: 'Admin',
         email: 'vighen@hotmai.fr',
         password: hashedPassword,
         isAdmin: true,
-        address: '123 Rue Admin',  // Ajoute une adresse par défaut ici
-        phoneNumber: '0000000000'  // Tu peux également fournir un numéro de téléphone par défaut                     // Utilisation de isAdmin pour définir l'administrateur
+        address: '123 Rue Admin',
+        phoneNumber: '0000000000',
       });
-
       console.log('Administrateur créé avec succès.');
     } else {
       console.log('Un administrateur existe déjà.');
@@ -100,6 +98,7 @@ const createAdminIfNeeded = async () => {
     await createAdminIfNeeded(); // Appel de la fonction de création d'admin
   } catch (error) {
     console.error('Erreur lors de la synchronisation de la base de données :', error);
+    process.exit(1); // Arrête le processus si la synchronisation échoue
   }
 })();
 
@@ -110,7 +109,6 @@ export {
   Reservation,
   User
 };
-
 
 // // TEST AJJOUT DE ADMIN TEMPORAIRE POUR ACCEDER A LA BDD 
 // import express from 'express';
