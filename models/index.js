@@ -78,7 +78,9 @@ const createAdminIfNeeded = async () => {
         lastName: 'Admin',                 // Ajout d'un nom de famille
         email: 'vighen@hotmai.fr',
         password: hashedPassword,
-        isAdmin: true,                     // Utilisation de isAdmin pour définir l'administrateur
+        isAdmin: true,
+        address: '123 Rue Admin',  // Ajoute une adresse par défaut ici
+        phoneNumber: '0000000000'  // Tu peux également fournir un numéro de téléphone par défaut                     // Utilisation de isAdmin pour définir l'administrateur
       });
 
       console.log('Administrateur créé avec succès.');
