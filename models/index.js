@@ -70,6 +70,7 @@ Reservation.belongsTo(Car);
 (async () => {
   try {
     await connection.sync({ force: true }); // Synchronisation avec ALTER pour éviter la perte de données
+    //await connection.sync();
     console.log('Base de données synchronisée');
   } catch (error) {
     console.error('Erreur lors de la synchronisation de la base de données :', error);
