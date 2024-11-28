@@ -1,6 +1,91 @@
+import express from 'express';
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt'; // Import de bcrypt pour le hashage des mots de passe
 
+import carModel from './car.js';
+import carImageModel from './carImage.js';
+import paymentModel from './payment.js';
+import reservationModel from './reservation.js';
+import userModel from './user.js';
 
-// //TEST  connection a dot.env
+dotenv.config();
+
+// Vérification de la variable d'environnement DB_URL
+const dbUrl = process.env.DB_URL;
+if (!dbUrl) {
+  console.error('Erreur critique : DB_URL est undefined');
+  process.exit(1); // Arrête le processus si la variable est manquante
+}
+console.log('DB_URL:', dbUrl); // Vérification
+
+// Initialiser l'application Express
+const app = express();
+const PORT = process.env.PORT || 8000; // Utilisation d'une valeur par défaut si PORT est undefined
+
+// Connexion à la base de données avec Sequelize
+const connection = new Sequelize(dbUrl, {
+  dialect: 'mysql',
+  logging: console.log, // Facultatif, pour activer les logs SQL
+});
+console.log(connection);
+
+// Authentification de la base de données
+(async () => {
+  try {
+    await connection.authenticate();
+    console.log('Connexion réussie à la base de données');
+  } catch (error) {
+    console.error('Impossible de se connecter à la base de données :', error);
+    process.exit(1); // Arrête le processus en cas d'échec de la connexion
+  }
+})();
+
+// Initialisation des modèles
+carModel(connection, Sequelize);
+carImageModel(connection, Sequelize);
+paymentModel(connection, Sequelize);
+reservationModel(connection, Sequelize);
+userModel(connection, Sequelize);
+
+// Définition des relations entre les modèles
+const { Car, CarImage, Payment, Reservation, User } = connection.models;
+
+User.hasMany(Reservation);
+Reservation.belongsTo(User);
+
+Reservation.hasMany(Payment);
+Payment.belongsTo(Reservation);
+
+Payment.belongsTo(User);
+User.hasMany(Payment);
+
+Car.hasMany(CarImage);
+CarImage.belongsTo(Car);
+
+Car.hasMany(Reservation);
+Reservation.belongsTo(Car);
+
+// Synchroniser les modèles
+(async () => {
+  try {
+    await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
+    console.log('Base de données synchronisée');
+  } catch (error) {
+    console.error('Erreur lors de la synchronisation de la base de données :', error);
+    process.exit(1); // Arrête le processus si la synchronisation échoue
+  }
+})();
+
+export {
+  Car,
+  CarImage,
+  Payment,
+  Reservation,
+  User
+};
+
+// //FONCTIONNE OK 
 // import express from 'express';
 // import { Sequelize } from 'sequelize';
 // import dotenv from 'dotenv';
@@ -16,7 +101,6 @@
 
 // // Vérification de la variable d'environnement DB_URL
 // const dbUrl = process.env.DB_URL;
-// const nodeEnv = process.env.NODE_ENV;
 // if (!dbUrl) {
 //   console.error('Erreur critique : DB_URL est undefined');
 //   process.exit(1); // Arrête le processus si la variable est manquante
@@ -34,23 +118,16 @@
 // });
 // console.log(connection);
 
-// if(nodeEnv === 'prod') {
-    
-
 // // Authentification de la base de données
 // (async () => {
-//     try {
-//       await connection.authenticate();
-//       console.log('Connexion réussie à la base de données');
-//     } catch (error) {
-//       console.error('Impossible de se connecter à la base de données :', error);
-//       process.exit(1); // Arrête le processus en cas d'échec de la connexion
-//     }
-//   })();
-
-// }
-
-
+//   try {
+//     await connection.authenticate();
+//     console.log('Connexion réussie à la base de données');
+//   } catch (error) {
+//     console.error('Impossible de se connecter à la base de données :', error);
+//     process.exit(1); // Arrête le processus en cas d'échec de la connexion
+//   }
+// })();
 
 // // Initialisation des modèles
 // carModel(connection, Sequelize);
@@ -120,120 +197,6 @@
 //   Reservation,
 //   User
 // };
-
-
-//FONCTIONNE OK 
-import express from 'express';
-import { Sequelize } from 'sequelize';
-import dotenv from 'dotenv';
-import bcrypt from 'bcrypt'; // Import de bcrypt pour le hashage des mots de passe
-
-import carModel from './car.js';
-import carImageModel from './carImage.js';
-import paymentModel from './payment.js';
-import reservationModel from './reservation.js';
-import userModel from './user.js';
-
-dotenv.config();
-
-// Vérification de la variable d'environnement DB_URL
-const dbUrl = process.env.DB_URL;
-if (!dbUrl) {
-  console.error('Erreur critique : DB_URL est undefined');
-  process.exit(1); // Arrête le processus si la variable est manquante
-}
-console.log('DB_URL:', dbUrl); // Vérification
-
-// Initialiser l'application Express
-const app = express();
-const PORT = process.env.PORT || 8000; // Utilisation d'une valeur par défaut si PORT est undefined
-
-// Connexion à la base de données avec Sequelize
-const connection = new Sequelize(dbUrl, {
-  dialect: 'mysql',
-  logging: console.log, // Facultatif, pour activer les logs SQL
-});
-console.log(connection);
-
-// Authentification de la base de données
-(async () => {
-  try {
-    await connection.authenticate();
-    console.log('Connexion réussie à la base de données');
-  } catch (error) {
-    console.error('Impossible de se connecter à la base de données :', error);
-    process.exit(1); // Arrête le processus en cas d'échec de la connexion
-  }
-})();
-
-// Initialisation des modèles
-carModel(connection, Sequelize);
-carImageModel(connection, Sequelize);
-paymentModel(connection, Sequelize);
-reservationModel(connection, Sequelize);
-userModel(connection, Sequelize);
-
-// Définition des relations entre les modèles
-const { Car, CarImage, Payment, Reservation, User } = connection.models;
-
-User.hasMany(Reservation);
-Reservation.belongsTo(User);
-
-Reservation.hasMany(Payment);
-Payment.belongsTo(Reservation);
-
-Payment.belongsTo(User);
-User.hasMany(Payment);
-
-Car.hasMany(CarImage);
-CarImage.belongsTo(Car);
-
-Car.hasMany(Reservation);
-Reservation.belongsTo(Car);
-
-// Fonction pour créer un administrateur si nécessaire
-const createAdminIfNeeded = async () => {
-  try {
-    const adminExists = await User.findOne({ where: { isAdmin: true } });
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('password123', 10);
-      await User.create({
-        firstName: 'Vighen',
-        lastName: 'Admin',
-        email: 'vighen@hotmai.fr',
-        password: hashedPassword,
-        isAdmin: true,
-        address: '123 Rue Admin',
-        phoneNumber: '0000000000',
-      });
-      console.log('Administrateur créé avec succès.');
-    } else {
-      console.log('Un administrateur existe déjà.');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la création de l\'administrateur :', error);
-  }
-};
-
-// Synchroniser les modèles et créer l'administrateur
-(async () => {
-  try {
-    await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
-    console.log('Base de données synchronisée');
-    await createAdminIfNeeded(); // Appel de la fonction de création d'admin
-  } catch (error) {
-    console.error('Erreur lors de la synchronisation de la base de données :', error);
-    process.exit(1); // Arrête le processus si la synchronisation échoue
-  }
-})();
-
-export {
-  Car,
-  CarImage,
-  Payment,
-  Reservation,
-  User
-};
 
 // TEST AJJOUT DE ADMIN TEMPORAIRE POUR ACCEDER A LA BDD 
 
