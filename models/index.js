@@ -69,8 +69,8 @@ Reservation.belongsTo(Car);
 // Synchroniser les modèles
 (async () => {
   try {
-    await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
-    //await connection.sync();
+    //await connection.sync({ alter: true }); // Synchronisation avec ALTER pour éviter la perte de données
+    await connection.sync();
     console.log('Base de données synchronisée');
   } catch (error) {
     console.error('Erreur lors de la synchronisation de la base de données :', error);
