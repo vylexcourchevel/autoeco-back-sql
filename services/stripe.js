@@ -1,8 +1,8 @@
-// import Stripe from "stripe";
-// import dotenv from "dotenv";
+import Stripe from "stripe";
+import dotenv from "dotenv";
 
-// dotenv.config();
+dotenv.config();
 
-// const stripe = new Stripe(process.env.SECRET_KEYSTRIPE);
+const stripe = new Stripe(process.env.SECRET_KEYSTRIPE);
 
-// export default stripe; // Assurez-vous d'utiliser "export default"
+export default stripe; // Assurez-vous d'utiliser "export default"
