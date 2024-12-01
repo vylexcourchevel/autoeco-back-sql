@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   return next();
 });
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "https://react-autoeco-vighen.onrender.com",
   credentials: true
 }))
 
