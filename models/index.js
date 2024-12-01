@@ -19,6 +19,7 @@ if (!dbUrl) {
 }
 console.log('DB_URL:', dbUrl); // Vérification
 
+
 // Initialiser l'application Express
 const app = express();
 const PORT = process.env.PORT || 8000; // Utilisation d'une valeur par défaut si PORT est undefined
