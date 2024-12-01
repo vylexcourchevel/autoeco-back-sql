@@ -21,26 +21,28 @@ import stripeRoutes from './routes/stripe.router.js';
 const app = express();
 
 
-
+// TEST pour la suppression des cors vighen 01/12
 
 //Middleware pour gérer les problèmes de CORS
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-//   return next();
-// });
-// app.use(cors({
-//   origin: "http://localhost:3000",
-//   credentials: true
-// }))
-
-//TEST VIGHEN ADRESSE DEPLOIEMENT SITE 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://react-autoeco-vighen.onrender.com");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  return next();
+});
 app.use(cors({
-  origin: "https://react-autoeco-vighen.onrender.com",
+  origin: "http://localhost:3000",
   credentials: true
 }))
+
+
+
+// //TEST VIGHEN ADRESSE DEPLOIEMENT SITE 
+// app.use(cors({
+//   origin: "https://react-autoeco-vighen.onrender.com",
+//   credentials: true
+// }))
 
 
 // Définition du port
