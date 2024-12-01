@@ -7,5 +7,8 @@ export const env = {
   token: process.env.TOKEN,
   SECRET_KEYSTRIPE: process.env. SECRET_KEYSTRIPE,
   WEB_APP_URL: process.env.WEB_APP_URL
+  
 };
+
+console.log(env);
 
