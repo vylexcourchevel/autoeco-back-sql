@@ -54,6 +54,7 @@ const requestPasswordReset = async (req, res) => {
 
         res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ message: 'Une erreur est survenue.' });
     }
 };

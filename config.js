@@ -15,5 +15,3 @@ export const env = {
   WEB_APP_URL: process.env.WEB_APP_URL,
   DB_URL: process.env.DB_URL  // Ajoute cette ligne
 };
-
-
