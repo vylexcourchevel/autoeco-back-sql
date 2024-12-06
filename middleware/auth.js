@@ -1,17 +1,29 @@
 
+
 import jwt from 'jsonwebtoken';
 import { env } from '../config.js';
 import { createError } from '../error.js';
 
 export const verifyToken = (req, res, next) => {
-    const token = req.cookies.access_token;
-
+    // Vérification du token dans les cookies
+    let token = req.cookies.access_token;
+    
+    // Si le token n'est pas dans les cookies, on le cherche dans l'en-tête Authorization
+    if (!token && req.headers.authorization) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+    
+    // Log pour déboguer l'absence de token
+    console.log("Token reçu :", token ? "Oui" : "Non");
+    
     if (!token) {
         return next(createError(401, "Accès refusé, token manquant"));
     }
 
+    // Vérification du token
     jwt.verify(token, env.token, (err, user) => {
         if (err) {
+            console.error("Erreur de vérification du token :", err.message);
             if (err.name === 'TokenExpiredError') {
                 return next(createError(401, "Le token a expiré"));
             }
@@ -29,6 +41,8 @@ export const verifyRole = (role) => {
         verifyToken(req, res, (err) => {
             if (err) return next(err);
 
+            console.log("Utilisateur connecté :", req.user);
+
             if (req.user.role !== role) {
                 return next(createError(403, "Accès interdit pour ce rôle !"));
             }
@@ -36,3 +50,4 @@ export const verifyRole = (role) => {
         });
     };
 };
+

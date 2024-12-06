@@ -5,6 +5,7 @@ import { sendConfirmationEmail } from '../services/emailService.js';
 
 // Fonction pour créer une nouvelle réservation
 const createReservation = async (req, res) => {
+  console.log('Requête reçue', req.body);
   try {
     // Récupération de l'ID de l'utilisateur connecté (dérivé du token ou session)
     const userId = req.user.id;
@@ -39,7 +40,11 @@ const createReservation = async (req, res) => {
       model: car.model,          // Modèle de la voiture
       years: car.years,          // Année de fabrication de la voiture
       pricePerDay: car.pricePerDay,  // Prix par jour de location
+<<<<<<< HEAD
       imageURL: car.CarImages.length > 0 ? `${process.env.BACKEND_URL}${car.CarImages[0].imageURL}` : null // URL de l'image de la voiture
+=======
+      imageURL: car.CarImages.length > 0 ? `https://react-autoeco-vighen.onrender.com${car.CarImages[0].imageURL}` : null // URL de l'image de la voiture
+>>>>>>> deploiement
     };
 
     // Appel de la fonction d'envoi d'email

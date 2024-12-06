@@ -34,8 +34,9 @@ const requestPasswordReset = async (req, res) => {
 
         // Débogage : Décodage du token généré pour voir son contenu
         const decoded = jwt.decode(resetToken);
+        //CHANGE URL DEPLOIEMENT TEST VIGHEN
 
-        const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+        const resetUrl = `https://react-autoeco-vighen.onrender.com/reset-password/${resetToken}`;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -54,6 +55,7 @@ const requestPasswordReset = async (req, res) => {
 
         res.status(200).json({ message: 'Un email de réinitialisation a été envoyé.' });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ message: 'Une erreur est survenue.' });
     }
 };
@@ -125,8 +127,8 @@ const login = async (req, res) => {
 
         res.cookie("access_token", token, {
             httpOnly: true,
-            
-         
+            //secure: process.env.NODE_ENV === 'production',
+            //sameSite: 'Strict'
         }).status(200).json(user);
 
     } catch (e) {

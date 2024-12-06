@@ -1,16 +1,13 @@
-
-// services/emailService.js
-
+// // services/emailService.js TEST console.log 
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 // Charger les variables d'environnement
 dotenv.config();
-
-
+console.log('Initialisation de Nodemailer avec l\'utilisateur :', process.env.GMAIL_USER ? 'Utilisateur présent' : 'Utilisateur manquant');
+console.log('Transporteur :', process.env.GMAIL_PASS ? 'Mot de passe présent' : 'Mot de passe manquant');
 
 const createTransporter = () => {
-
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -23,12 +20,13 @@ const createTransporter = () => {
       },
     });
 
+    console.log('Transporteur de mail créé avec succès');
     return transporter;
   } catch (error) {
-    console.error('Erreur lors de la creation du transporteur:', error);
+    console.error('Erreur lors de la création du transporteur:', error.message);
+    throw error; // Re-lancer l'erreur pour remonter dans l'appel
   }
 };
-
 
 const sendConfirmationEmail = async (recipientEmail, { carDetails, startDate, endDate, totalPrice }) => {
   const transporter = createTransporter();
@@ -50,10 +48,16 @@ const sendConfirmationEmail = async (recipientEmail, { carDetails, startDate, en
     `,
   };
 
+  console.log('Options de l\'email:', mailOptions);
+
   try {
     const info = await transporter.sendMail(mailOptions);
+    console.log('Email envoyé avec succès. ID du message:', info.messageId);
   } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email:', error);
+    console.error('Erreur lors de l\'envoi de l\'email:', error.message);
+    if (error.response) {
+      console.error('Réponse du serveur SMTP:', error.response);
+    }
   }
 };
 
