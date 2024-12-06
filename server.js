@@ -79,9 +79,6 @@ app.get('/favicon.ico', (req, res) => {
 })
 app.get('/*', (req, res) => {
   //console.log('GET /')
-  if(req.query.source){
-      incrementScoreForSource(req.query.source)
-  }
   res.sendFile(__dirname + "../frontend/build/index.html");
 });
 
