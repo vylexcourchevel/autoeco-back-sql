@@ -1,23 +1,36 @@
-// tests/auth.test.js
+import jwt from 'jsonwebtoken';
+import { verifyToken, verifyRole } from '../middleware/auth'; // Adjust the path as needed
+import { createError } from '../error.js';
+import { jest } from "@jest/globals"
+jest.mock('jsonwebtoken'); // Mock jsonwebtoken
+jest.mock('../error.js'); // Mock error handling
 
-// a mettre obligatoirement avant de commencer le test !!!!
-process.env.NODE_ENV = 'test';
-import 'jest-extended';
+describe('Auth Middleware Tests', () => {
+    let req, res, next;
 
-import request from 'supertest';
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import userRoutes from '../routes/userRoutes.js';
-import sequelize from '../config/database.js';
-import User from '../models/user.js';
+    beforeEach(() => {
+        req = {
+            cookies: {},
+            headers: {},
+        };
+        res = {};
+        next = jest.fn(); // Mock the next function
+    });
 
+    describe('verifyToken', () => {
+        test('should call next with an error if no token is provided', () => {
+            verifyToken(req, res, next);
+            expect(next).toHaveBeenCalledWith(createError(401, "Accès refusé, token manquant"));
+        });
+    });
 
+    describe('verifyRole', () => {
+        test('should call next if user role matches', () => {
+            req.user = { role: 'admin' }; // Mock user role
+            const roleToCheck = 'admin';
 
-
-dotenv.config();
-
-// faire un fichier test par controller !! !
-
-
-// Configure l'application Express
+            verifyRole(roleToCheck)(req, res, next);
+            expect(next).toHaveBeenCalled(); // Ensure next() was called
+        });
+    });
+});

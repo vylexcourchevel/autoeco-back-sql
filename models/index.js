@@ -29,7 +29,7 @@ const connection = new Sequelize(dbUrl, {
   dialect: 'mysql',
   logging: console.log, // Facultatif, pour activer les logs SQL
 });
-console.log(connection);
+//console.log(connection);
 
 // Authentification de la base de données
 (async () => {
