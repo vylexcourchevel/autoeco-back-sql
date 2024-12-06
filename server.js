@@ -74,11 +74,11 @@ app.get('/static/:dir/:file', (req, res) => {
 })
 
 app.get('/favicon.ico', (req, res) => {
-  //console.log('GET /favicon.ico')
+  console.log('GET /favicon.ico')
   res.sendFile(__dirname + "../frontend/public/favicon.ico");
 })
 app.get('/*', (req, res) => {
-  //console.log('GET /')
+  console.log('GET /')
   res.sendFile(__dirname + "../frontend/build/index.html");
 });
 
