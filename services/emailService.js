@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 
 // Charger les variables d'environnement
 dotenv.config();
-console.log('Initialisation de Nodemailer avec l\'utilisateur :', process.env.GMAIL_USER ? 'Utilisateur présent' : 'Utilisateur manquant');
-console.log('Transporteur :', process.env.GMAIL_PASS ? 'Mot de passe présent' : 'Mot de passe manquant');
 
 const createTransporter = () => {
   try {
@@ -20,7 +18,6 @@ const createTransporter = () => {
       },
     });
 
-    console.log('Transporteur de mail créé avec succès');
     return transporter;
   } catch (error) {
     console.error('Erreur lors de la création du transporteur:', error.message);
@@ -48,11 +45,8 @@ const sendConfirmationEmail = async (recipientEmail, { carDetails, startDate, en
     `,
   };
 
-  console.log('Options de l\'email:', mailOptions);
-
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email envoyé avec succès. ID du message:', info.messageId);
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email:', error.message);
     if (error.response) {

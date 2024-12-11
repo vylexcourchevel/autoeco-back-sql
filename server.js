@@ -24,8 +24,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-
-
 //TEST VIGHEN ADRESSE DEPLOIEMENT SITE 
 app.use(cors({
   origin: process.env.FRONTEND_SERVER,
@@ -53,16 +51,13 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/stripe', stripeRoutes);
 
 app.get('/static/:dir/:file', (req, res) => {
-  //console.log('GET /static/' + req.params.dir + "/" + req.params.file)
   res.sendFile(__dirname + "/frontend/build/static/" + req.params.dir + "/" + req.params.file)
 })
 
 app.get('/favicon.ico', (req, res) => {
-  console.log('GET /favicon.ico')
   res.sendFile(__dirname + "/frontend/public/favicon.ico");
 })
 app.get('/*', (req, res) => {
-  console.log('GET /')
   res.sendFile(__dirname + "/frontend/build/index.html");
 });
 

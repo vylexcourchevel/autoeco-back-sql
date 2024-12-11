@@ -4,18 +4,13 @@ import { env } from "../config.js";
 import { User } from '../models/index.js';
 
 const stripe = new Stripe(env.SECRET_KEYSTRIPE);
-console.log('Stripe initialisé avec la clé:', env.SECRET_KEYSTRIPE ? 'Clé fournie' : 'Clé manquante');
 
 const createCheckoutSession = async (req, res) => {
     const domainURL = env.WEB_APP_URL;
     const { totalPrice, carId } = req.body;
 
-    console.log('Requête reçue avec les données:', req.body);
-    console.log('Utilisateur authentifié:', req.user);
-
     try {
         const fullUser = await User.findByPk(req.user.id);
-        console.log('Utilisateur trouvé dans la base de données:', fullUser);
 
         if (!fullUser) {
             console.error('Utilisateur introuvable dans la base de données');
@@ -23,7 +18,6 @@ const createCheckoutSession = async (req, res) => {
         }
 
         const email = fullUser.email;
-        console.log('Email de l\'utilisateur:', email);
 
         if (!totalPrice || !carId || !email) {
             console.error('Paramètres manquants:', { totalPrice, carId, email });
@@ -51,8 +45,6 @@ const createCheckoutSession = async (req, res) => {
             cancel_url: `${domainURL}/cancel`,
             shipping_address_collection: { allowed_countries: ["FR"] },
         });
-
-        console.log('Session Stripe créée avec succès:', session);
 
         return res.status(200).json({ url: session.url });
     } catch (error) {

@@ -7,15 +7,12 @@ import { createError } from '../error.js';
 export const verifyToken = (req, res, next) => {
     // Vérification du token dans les cookies
     let token = req.cookies.access_token;
-    
+
     // Si le token n'est pas dans les cookies, on le cherche dans l'en-tête Authorization
     if (!token && req.headers.authorization) {
         token = req.headers.authorization.split(' ')[1];
     }
-    
-    // Log pour déboguer l'absence de token
-    console.log("Token reçu :", token ? "Oui" : "Non");
-    
+
     if (!token) {
         return next(createError(401, "Accès refusé, token manquant"));
     }

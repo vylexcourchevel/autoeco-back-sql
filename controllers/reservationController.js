@@ -9,7 +9,6 @@ dotenv.config();
 
 // Fonction pour créer une nouvelle réservation
 const createReservation = async (req, res) => {
-  console.log('Requête reçue', req.body);
   try {
     // Récupération de l'ID de l'utilisateur connecté (dérivé du token ou session)
     const userId = req.user.id;
