@@ -26,45 +26,43 @@ const getCarById = async (req, res) => {
 
 // Créer une nouvelle voiture
 // conconst createCar = async (req, res) => {
-  const createCar = async (req, res) => {
-    try {
-      const available = req.body.available ? parseInt(req.body.available, 10) : 0;
-  
-      // Créer la voiture dans la base de données
-      const newCar = await Car.create({
-        brand: req.body.brand,
-        model: req.body.model,
-        registrationPlate: req.body.registrationPlate,
-        years: parseInt(req.body.years, 10),
-        pricePerDay: parseFloat(req.body.pricePerDay),
-        available,
-      });
-  
-      // Vérifier si des fichiers d'image sont envoyés avec la requête
-      if (req.files && req.files.length > 0) {
-        const imagePromises = req.files.map(file => {
-          // Créer une image associée à la voiture
-          return CarImage.create({
-            imageURL: `/images/${file.filename}`, // L'URL de l'image
-            CarId: newCar.id, // Lier l'image à la voiture nouvellement créée
-          });
+const createCar = async (req, res) => {
+  try {
+    // Créer la voiture dans la base de données
+    const newCar = await Car.create({
+      brand: req.body.brand,
+      model: req.body.model,
+      registrationPlate: req.body.registrationPlate,
+      years: parseInt(req.body.years, 10),
+      pricePerDay: parseFloat(req.body.pricePerDay),
+      available: true,
+    });
+
+    // Vérifier si des fichiers d'image sont envoyés avec la requête
+    if (req.files && req.files.length > 0) {
+      const imagePromises = req.files.map(file => {
+        // Créer une image associée à la voiture
+        return CarImage.create({
+          imageURL: `/images/${file.filename}`, // L'URL de l'image
+          CarId: newCar.id, // Lier l'image à la voiture nouvellement créée
         });
-  
-        // Attendre que toutes les images soient ajoutées
-        await Promise.all(imagePromises);
-      }
-  
-      // Répondre avec les données de la voiture créée
-      res.status(201).json({
-        message: "Car created successfully",
-        car: newCar,
-        images: req.files ? req.files.map(file => `/images/${file.filename}`) : [],
       });
-    } catch (error) {
-      console.error('Error during car creation:', error);
-      res.status(500).json({ error: 'An error occurred while creating the car.' });
+
+      // Attendre que toutes les images soient ajoutées
+      await Promise.all(imagePromises);
     }
-  };
+
+    // Répondre avec les données de la voiture créée
+    res.status(201).json({
+      message: "Car created successfully",
+      car: newCar,
+      images: req.files ? req.files.map(file => `/images/${file.filename}`) : [],
+    });
+  } catch (error) {
+    console.error('Error during car creation:', error);
+    res.status(500).json({ error: 'An error occurred while creating the car.' });
+  }
+};
 
 // Mettre à jour une voiture existante
 const updateCar = async (req, res) => {
