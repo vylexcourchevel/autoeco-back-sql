@@ -4,17 +4,6 @@ const CarLocation = require('../models/carLocation');
 
 exports.getAllCars = async (req, res) => {
 
-  // const carImageObject = JSON.parse(req.body.thing);
-  // delete thingObject._id;
-  // delete thingObject._userId;
-  // const thing = new Thing ({
-  //   ...thingObject,
-  //   userId: req.auth.userId,
-  //   imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  // }
-
-  // );
-
   try {
     const cars = await Car.findAll({
       

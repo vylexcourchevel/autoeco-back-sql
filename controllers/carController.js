@@ -26,6 +26,7 @@ const getCarById = async (req, res) => {
 
 // Créer une nouvelle voiture
 const createCar = async (req, res) => {
+  console.log("creating car")
   try {
     // Créer la voiture dans la base de données
     const newCar = await Car.create({

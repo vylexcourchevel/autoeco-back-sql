@@ -15,12 +15,3 @@ router.post("/create-checkout-session", verifyToken, checkout.createCheckoutSess
 // Exportation du routeur pour qu'il puisse être utilisé dans le reste de l'application.
 export default router;
 
-// import express from "express";
-// import checkout from "../services/checkout.js"; // Utilisez "checkout" pour correspondre à l'export par défaut
-// import { verifyToken } from "../middleware/auth.js";
-// const router = express.Router();
-
-// router.post("/create-checkout-session", verifyToken, checkout.createCheckoutSession);
-
-// export default router;
-
